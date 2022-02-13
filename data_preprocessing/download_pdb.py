@@ -126,6 +126,30 @@ def get_single(pdb_id: str,chains: list):
         np.save(npy_dir / f"{pdb_id}_{chain}_atomxyz", protein["xyz"])
         np.save(npy_dir / f"{pdb_id}_{chain}_atomtypes", protein["types"])
 
+def convert_to_npy(target_pdb, chains_dir, npy_dir, chains = ['A']):
+    pdb_id = target_pdb.split('/')[-1]
+    pdb_id = pdb_id[:-4]
+    protonated_file = target_pdb
+    #if not protonated_file.exists():
+        # Download pdb 
+    #    pdbl = PDBList()
+    #    pdb_filename = pdbl.retrieve_pdb_file(pdb_id, pdir='/content/tmp',file_format='pdb')
+
+        ##### TO DO!!!! ADD PROTONATION. REDUCE IS C++ BUT SHOULD HAVE A PACKAGE IN OPENMM. #####
+        ##### Protonate with reduce, if hydrogens included.
+        # - Always protonate as this is useful for charges. If necessary ignore hydrogens later.
+        # protonate(pdb_filename, protonated_file)
+
+    pdb_filename = protonated_file
+
+    # Extract chains of interest.
+    for chain in chains:
+        out_filename = chains_dir +"/"+ "{id}_{chain}.pdb".format(id=pdb_id,chain=chain)
+        extractPDB(pdb_filename, str(out_filename), chain)
+        protein = load_structure_np(out_filename,center=False)
+        np.save(npy_dir +"/"+ "{id}_{chain}_atomxyz".format(id=pdb_id,chain=chain), protein["xyz"])
+        np.save(npy_dir +"/"+ "{id}_{chain}_atomtypes".format(id=pdb_id,chain=chain), protein["types"])
+
 if __name__ == '__main__':
     args = parser.parse_args()
     if args.pdb != '':
