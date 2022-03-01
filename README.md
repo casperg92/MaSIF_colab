@@ -4,7 +4,7 @@
 This repo contains a dMaSIF implementation for google colab.
 For now we only have a dMaSIF site implementation for visualizing protein binding sites. We are working on other implementations, keep an eye on this repo!
 
-Link to the colab: [dMaSIF_V1](https://colab.research.google.com/github/casperg92/MaSIF_colab/blob/main/dMaSIF_Colab_V1.ipynb)
+Link to the [dMaSIF_colab](https://colab.research.google.com/github/casperg92/MaSIF_colab/blob/main/dMaSIF_Colab_V1.ipynb)
 
 ## Available dMaSIF models
 
