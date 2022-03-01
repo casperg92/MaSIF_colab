@@ -10,8 +10,8 @@ Link to the [dMaSIF_colab](https://colab.research.google.com/github/casperg92/Ma
 
 | Models | Resolution | Dimensions | Layers | Radius | ROC/AUC |
 | :---------- | ----  | -- | - | ---- | ---- |
-| dMaSIF site | 1.0 A | 16 | 3 | 12 A | 0.88 |
-| dMaSIF site | 1.0 A | 16 | 3 | 9 A  | 0.88 |
+| dMaSIF site | 1.0 A | 16 | 3 | 12 A | 0.87 |
+| dMaSIF site | 1.0 A | 16 | 3 | 9 A  | 0.87 |
 | dMaSIF site | 0.7 A | 16 | 3 | 12 A | 0.88 |
 | dMaSIF site | 0.7 A | 16 | 3 | 9 A  | 0.88 |
 
