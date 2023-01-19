@@ -541,7 +541,7 @@ def curvatures(
 
         # (minus) Shape operator, i.e. the differential of the Gauss map:
         # = (PPt^-1 @ PQt) : simple estimation through linear regression
-        S = torch.solve(PQt, PPt).solution
+        S = torch.linalg.solve(PQt, PPt)
         a, b, c, d = S[:, 0, 0], S[:, 0, 1], S[:, 1, 0], S[:, 1, 1]  # (N,)
 
         # Normalization

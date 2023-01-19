@@ -7,7 +7,7 @@ import os
 import numpy as np
 from subprocess import Popen, PIPE
 from pathlib import Path
-from convert_pdb2npy import load_structure_np
+from data_preprocessing.convert_pdb2npy import load_structure_np
 import argparse
 
 parser = argparse.ArgumentParser(description="Arguments")
