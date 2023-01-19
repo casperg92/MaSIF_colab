@@ -217,19 +217,21 @@ class PairData(Data):
         self.rand_rot1 = rand_rot1
         self.rand_rot2 = rand_rot2
 
-    def __inc__(self, key, value):
+    def __inc__(self, key, value,_):
         if key == "face_p1":
             return self.xyz_p1.size(0)
         if key == "face_p2":
             return self.xyz_p2.size(0)
         else:
-            return super(PairData, self).__inc__(key, value)
+            return super(PairData, self).__inc__(key, value,_)
 
-    def __cat_dim__(self, key, value):
+    def __cat_dim__(self, key, value, _):
         if ("index" in key) or ("face" in key):
             return 1
         else:
             return 0
+
+ 
 
 
 def load_protein_pair(pdb_id, data_dir,single_pdb=False):
@@ -244,27 +246,41 @@ def load_protein_pair(pdb_id, data_dir,single_pdb=False):
     # pdist = pdist<2.0
     # y_p1 = (pdist.sum(1)>0).to(torch.float).reshape(-1,1)
     # y_p2 = (pdist.sum(0)>0).to(torch.float).reshape(-1,1)
-    y_p1 = p1["y"]
-    y_p2 = p2["y"]
-
-    protein_pair_data = PairData(
-        xyz_p1=p1["xyz"],
-        xyz_p2=p2["xyz"],
-        face_p1=p1["face"],
-        face_p2=p2["face"],
-        chemical_features_p1=p1["chemical_features"],
-        chemical_features_p2=p2["chemical_features"],
-        y_p1=y_p1,
-        y_p2=y_p2,
-        normals_p1=p1["normals"],
-        normals_p2=p2["normals"],
-        center_location_p1=p1["center_location"],
-        center_location_p2=p2["center_location"],
-        atom_coords_p1=p1["atom_coords"],
-        atom_coords_p2=p2["atom_coords"],
-        atom_types_p1=p1["atom_types"],
-        atom_types_p2=p2["atom_types"],
-    )
+    try:
+        y_p1 = p1["y"]
+    except: 
+        y_p1=None
+    try: 
+        y_p2 = p2["y"]
+    except: 
+        y_p2=None 
+       
+    try:
+        protein_pair_data = PairData(
+            xyz_p1=p1["xyz"],
+            xyz_p2=p2["xyz"],
+            face_p1=p1["face"],
+            face_p2=p2["face"],
+            chemical_features_p1=p1["chemical_features"],
+            chemical_features_p2=p2["chemical_features"],
+            y_p1=y_p1,
+            y_p2=y_p2,
+            normals_p1=p1["normals"],
+            normals_p2=p2["normals"],
+            center_location_p1=p1["center_location"],
+            center_location_p2=p2["center_location"],
+            atom_coords_p1=p1["atom_coords"],
+            atom_coords_p2=p2["atom_coords"],
+            atom_types_p1=p1["atom_types"],
+            atom_types_p2=p2["atom_types"],
+        )
+    except:
+          protein_pair_data = PairData(
+            atom_coords_p1=p1["atom_coords"],
+            atom_coords_p2=p2["atom_coords"],
+            atom_types_p1=p1["atom_types"],
+            atom_types_p2=p2["atom_types"],
+        )      
     return protein_pair_data
 
 
