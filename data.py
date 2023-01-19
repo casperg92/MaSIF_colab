@@ -246,15 +246,8 @@ def load_protein_pair(pdb_id, data_dir,single_pdb=False):
     # pdist = pdist<2.0
     # y_p1 = (pdist.sum(1)>0).to(torch.float).reshape(-1,1)
     # y_p2 = (pdist.sum(0)>0).to(torch.float).reshape(-1,1)
-    try:
-        y_p1 = p1["y"]
-    except: 
-        y_p1=None
-    try: 
-        y_p2 = p2["y"]
-    except: 
-        y_p2=None 
-       
+
+    # To work when we don't have surfaces or features pre-computed   
     try:
         protein_pair_data = PairData(
             xyz_p1=p1["xyz"],
@@ -263,8 +256,8 @@ def load_protein_pair(pdb_id, data_dir,single_pdb=False):
             face_p2=p2["face"],
             chemical_features_p1=p1["chemical_features"],
             chemical_features_p2=p2["chemical_features"],
-            y_p1=y_p1,
-            y_p2=y_p2,
+            y_p1=p1["y"],
+            y_p2=p2["y"],
             normals_p1=p1["normals"],
             normals_p2=p2["normals"],
             center_location_p1=p1["center_location"],

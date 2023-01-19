@@ -96,8 +96,7 @@ def save_protein_batch_single(protein_pair_id, P, save_path, pdb_idx):
     labels = P["labels"].view(-1, 1) if P["labels"] is not None else 0.0 * predictions
 
     coloring = torch.cat([inputs, embedding, predictions, labels], axis=1)
-    print(inputs.shape)
-    print(embedding.shape)
+
     save_vtk(str(save_path / pdb_id) + f"_pred_emb{emb_id}", xyz, values=coloring)
     np.save(str(save_path / pdb_id) + "_predcoords", numpy(xyz))
     np.save(str(save_path / pdb_id) + f"_predfeatures_emb{emb_id}", numpy(coloring))
@@ -350,7 +349,7 @@ def iterate(
             except: 
                 loss = torch.tensor(0.0)
                 sampled_preds = None
-                sampled_labels = None                
+                sampled_labels = None            
 
             # Compute the gradient, update the model weights:
             if not test:
