@@ -25,14 +25,13 @@ def main(_):
     folder_path  = FLAGS.input_dir
     model_resolution = float(FLAGS.model_resolution)
     patch_radius = int(FLAGS.patch_radius) 
-    working_dir = '/mnt/data'
 
     # create folders
-    chains_dir = os.path.join(working_dir,'chains')
+    chains_dir = os.path.join('chains')
     create_folder(chains_dir)
-    npy_dir = os.path.join(working_dir,'npys')
+    npy_dir = os.path.join('npys')
     create_folder(npy_dir)
-    reduce_dir = os.path.join(working_dir,'reduce')
+    reduce_dir = os.path.join('reduce')
     create_folder(reduce_dir)
     pred_dir = f'{folder_path}_embeddings'
     create_folder(pred_dir)
@@ -40,7 +39,7 @@ def main(_):
     os.makedirs(os.path.join(pred_dir,'emb_np'))
 
     # model parameters 
-    model_path, supsampling = get_model(working_dir, model_resolution, patch_radius)
+    model_path, supsampling = get_model(model_resolution, patch_radius)
 
     # Iterate over files inside folder 
     all_files = glob.glob(os.path.join(folder_path, '*.pdb'))

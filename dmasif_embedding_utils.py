@@ -1,7 +1,4 @@
 import os
-import sys
-sys.path.append("/mnt/data/MaSIF_colab") 
-sys.path.append("/mnt/data/MaSIF_colab/data_preprocessing") 
 import torch
 
 from Bio.PDB import *
@@ -28,7 +25,7 @@ def create_folder(folder_path: str):
         shutil.rmtree(folder_path)
     os.makedirs(folder_path)
 
-def get_model(root_dir: str, model_resolution: float = 0.7, patch_radius: int = 12) -> Tuple[str, int]:
+def get_model(model_resolution: float = 0.7, patch_radius: int = 12) -> Tuple[str, int]:
     """
     Get the path and supsampling value of the pre-trained dMaSIF model based on patch radius and model resolution. 
     There are 4 pre-trained models made available by the authors, depending on the model
@@ -52,7 +49,7 @@ def get_model(root_dir: str, model_resolution: float = 0.7, patch_radius: int = 
     model_path, supsampling = model_config.get((patch_radius, model_resolution), (None, None))
     if model_path is None:
         raise ValueError("Invalid patch radius or model resolution")
-    model_path = os.path.join(root_dir, f"models/{model_path}")    
+    model_path =  f"models/{model_path}"   
     return model_path, supsampling
 
 def generate_descr(model_path:str, output_path:str, pdb_file:str, npy_directory:str, radius:float, resolution:float,supsampling:int):
@@ -162,4 +159,3 @@ def protonate_pdb(reduce_dir:str, target_pdb:str) -> str:
     reduced_pdb = os.path.join(reduce_dir, f'{target_name}')
     shutil.copyfile(tmp2_pdb, reduced_pdb)   
     return reduced_pdb
-    
