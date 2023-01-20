@@ -162,3 +162,4 @@ def protonate_pdb(reduce_dir:str, target_pdb:str) -> str:
     reduced_pdb = os.path.join(reduce_dir, f'{target_name}')
     shutil.copyfile(tmp2_pdb, reduced_pdb)   
     return reduced_pdb
+    

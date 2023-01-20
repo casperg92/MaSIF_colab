@@ -1,16 +1,12 @@
 import torch
 import numpy as np
 from helper import *
-import torch.nn as nn
 import torch.nn.functional as F
-import torch.autograd.profiler as profiler
 from sklearn.metrics import roc_auc_score
-from pathlib import Path
-import math
-from tqdm import tqdm
 from geometry_processing import save_vtk
 from helper import numpy, diagonal_ranges
 import time
+import os
 
 
 def process_single(protein_pair, chain_idx=1):
@@ -96,11 +92,28 @@ def save_protein_batch_single(protein_pair_id, P, save_path, pdb_idx):
     labels = P["labels"].view(-1, 1) if P["labels"] is not None else 0.0 * predictions
 
     coloring = torch.cat([inputs, embedding, predictions, labels], axis=1)
-
     save_vtk(str(save_path / pdb_id) + f"_pred_emb{emb_id}", xyz, values=coloring)
     np.save(str(save_path / pdb_id) + "_predcoords", numpy(xyz))
     np.save(str(save_path / pdb_id) + f"_predfeatures_emb{emb_id}", numpy(coloring))
 
+def save_protein_embedding_single(protein_pair_id, P, save_path, pdb_idx):
+
+    protein_pair_id = protein_pair_id.split("_")
+    pdb_id = protein_pair_id[0] + "_" + protein_pair_id[pdb_idx]
+
+    xyz = P["xyz"]
+    inputs = P["input_features"]
+
+    embedding = P["embedding_1"] if pdb_idx == 1 else P["embedding_2"]
+    emb_id = 1 if pdb_idx == 1 else 2
+
+    predictions = torch.sigmoid(P["iface_preds"]) if "iface_preds" in P.keys() else 0.0*embedding[:,0].view(-1, 1)
+
+    all_info = torch.cat([inputs, embedding, predictions, xyz], axis=1)
+    coloring = torch.cat([inputs, embedding, predictions], axis=1)
+
+    save_vtk(os.path.join(save_path,'emb_vtk', f"{pdb_id}_pred_emb{emb_id}"), xyz, values=coloring)
+    np.save(os.path.join(save_path,'emb_np', f"{pdb_id}_emb_{emb_id}"), numpy(all_info))
 
 def project_iface_labels(P, threshold=2.0):
 
@@ -270,7 +283,7 @@ def iterate(
     total_processed_pairs = 0
     # Loop over one epoch:
     for it, protein_pair in enumerate(
-        tqdm(dataset)
+        dataset
     ):  # , desc="Test " if test else "Train")):
         protein_batch_size = protein_pair.atom_coords_p1_batch[-1].item() + 1
         if save_path is not None:
@@ -380,7 +393,7 @@ def iterate(
                     summary_writer.add_histogram(f"Input features/{d}", features)
 
             if save_path is not None:
-                save_protein_batch_single(
+                save_protein_embedding_single(
                     batch_ids[protein_it], P1, save_path, pdb_idx=1
                 )
                 if not args.single_protein:
@@ -432,7 +445,7 @@ def iterate(
 
 def iterate_surface_precompute(dataset, net, args):
     processed_dataset = []
-    for it, protein_pair in enumerate(tqdm(dataset)):
+    for it, protein_pair in enumerate(dataset):
         protein_pair.to(args.device)
         P1, P2 = process(args, protein_pair, net)
         if args.random_rotation:

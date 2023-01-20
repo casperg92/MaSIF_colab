@@ -1,10 +1,11 @@
 from dmasif_embedding_utils import get_model, generate_descr, protonate_pdb, create_folder
+from data_preprocessing.download_pdb import convert_to_npy
 import os
 import glob
 from absl import app
 from absl import flags
-from data_preprocessing.download_pdb import convert_to_npy
-
+from tqdm import tqdm
+ 
 FLAGS = flags.FLAGS
 
 
@@ -33,15 +34,17 @@ def main(_):
     create_folder(npy_dir)
     reduce_dir = os.path.join(working_dir,'reduce')
     create_folder(reduce_dir)
-    pred_dir = os.path.join(working_dir,'preds')
+    pred_dir = f'{folder_path}_embeddings'
     create_folder(pred_dir)
+    os.makedirs(os.path.join(pred_dir,'emb_vtk'))
+    os.makedirs(os.path.join(pred_dir,'emb_np'))
 
     # model parameters 
     model_path, supsampling = get_model(working_dir, model_resolution, patch_radius)
 
     # Iterate over files inside folder 
     all_files = glob.glob(os.path.join(folder_path, '*.pdb'))
-    for target_pdb in all_files: 
+    for target_pdb in tqdm(all_files): 
         chains = ['A']   #assuming that the protein corresponds to chain A 
         target_name = os.path.splitext(os.path.basename(target_pdb))[0]
         reduced_pdb = protonate_pdb(reduce_dir, target_pdb)
