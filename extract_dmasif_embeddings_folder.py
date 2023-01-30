@@ -33,7 +33,7 @@ def main(_):
     create_folder(npy_dir)
     reduce_dir = os.path.join('reduce')
     create_folder(reduce_dir)
-    pred_dir = f'{folder_path}_embeddings'
+    pred_dir = os.path.join(folder_path,f'{folder_path}_embeddings')
     create_folder(pred_dir)
     os.makedirs(os.path.join(pred_dir,'emb_vtk'))
     os.makedirs(os.path.join(pred_dir,'emb_np'))
