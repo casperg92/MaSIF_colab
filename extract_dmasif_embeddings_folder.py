@@ -42,7 +42,16 @@ def main(_):
     model_path, supsampling = get_model(model_resolution, patch_radius)
 
     # Iterate over files inside folder 
-    all_files = glob.glob(os.path.join(folder_path, '*.pdb'))
+    all_files = set(glob.glob(os.path.join(folder_path, '*.pdb')))
+    all_files_emb = set(glob.glob(os.path.join(pred_dir,'emb_vtk','*.npy')))
+    files_to_remove = set()
+
+    for file in all_files_emb:
+        base_name = os.path.splitext(os.path.basename(file))[0].replace('_A_emb_1', '')
+        files_to_remove.add(os.path.join(folder_path, base_name + '.pdb'))
+
+    all_files -=files_to_remove
+
     for target_pdb in tqdm(all_files): 
         chains = ['A']   #assuming that the protein corresponds to chain A 
         target_name = os.path.splitext(os.path.basename(target_pdb))[0]
