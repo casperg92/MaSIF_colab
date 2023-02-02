@@ -111,7 +111,7 @@ def generate_descr(model_path:str, output_path:str, pdb_file:str, npy_directory:
 
     net = dMaSIF(args)
     net.load_state_dict(torch.load(model_path,map_location=args.device)["model_state_dict"])
-    net = net.to(args.device)
+    net = net.to(torch.device(args.device))
 
     # Perform one pass through the data:
     info = iterate(
