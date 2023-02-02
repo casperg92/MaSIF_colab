@@ -34,16 +34,15 @@ def main(_):
     reduce_dir = os.path.join('reduce')
     create_folder(reduce_dir)
     pred_dir = os.path.join(folder_path,f'{folder_path}_embeddings')
-    create_folder(pred_dir)
-    os.makedirs(os.path.join(pred_dir,'emb_vtk'))
-    os.makedirs(os.path.join(pred_dir,'emb_np'))
+    if not os.path.exists(pred_dir):
+        os.makedirs(pred_dir)
 
     # model parameters 
     model_path, supsampling = get_model(model_resolution, patch_radius)
 
     # Iterate over files inside folder 
     all_files = set(glob.glob(os.path.join(folder_path, '*.pdb')))
-    all_files_emb = set(glob.glob(os.path.join(pred_dir,'emb_vtk','*.npy')))
+    all_files_emb = set(glob.glob(os.path.join(pred_dir,'*.npy')))
     files_to_remove = set()
 
     for file in all_files_emb:
