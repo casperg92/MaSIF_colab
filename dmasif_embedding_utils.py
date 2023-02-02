@@ -90,7 +90,7 @@ def generate_descr(model_path:str, output_path:str, pdb_file:str, npy_directory:
     parser.add_argument("--single_pdb",type=str,default=pdb_file)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--random_rotation",type=bool,default=False)
-    parser.add_argument("--device", type=str, default="cpu")
+    parser.add_argument("--device", type=str, default="gpu")
     parser.add_argument("--single_protein",type=bool,default=True) 
     parser.add_argument("--no_chem", type=bool, default=False)
     parser.add_argument("--no_geom", type=bool, default=False)

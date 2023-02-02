@@ -110,10 +110,7 @@ def save_protein_embedding_single(protein_pair_id, P, save_path, pdb_idx):
     predictions = torch.sigmoid(P["iface_preds"]) if "iface_preds" in P.keys() else 0.0*embedding[:,0].view(-1, 1)
 
     all_info = torch.cat([inputs, embedding, predictions, xyz], axis=1)
-    coloring = torch.cat([inputs, embedding, predictions], axis=1)
-
-    save_vtk(os.path.join(save_path,'emb_vtk', f"{pdb_id}_pred_emb{emb_id}"), xyz, values=coloring)
-    np.save(os.path.join(save_path,'emb_np', f"{pdb_id}_emb_{emb_id}"), numpy(all_info))
+    np.save(os.path.join(save_path, f"{pdb_id}_emb_{emb_id}"), numpy(all_info))
 
 def project_iface_labels(P, threshold=2.0):
 
