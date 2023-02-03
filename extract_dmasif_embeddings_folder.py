@@ -58,7 +58,10 @@ def main(_):
         convert_to_npy(reduced_pdb, chains_dir, npy_dir, chains)
         # Generate the embeddings
         pdb_name = "{n}_{c}_{c}".format(n=target_name, c=chains[0])
-        generate_descr(model_path, pred_dir, pdb_name, npy_dir, patch_radius, model_resolution, supsampling)
+        try: 
+            generate_descr(model_path, pred_dir, pdb_name, npy_dir, patch_radius, model_resolution, supsampling)
+        except: 
+            print('could not extract.')
 
 
 if __name__ == '__main__':
