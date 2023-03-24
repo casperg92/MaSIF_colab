@@ -24,7 +24,8 @@ def main(_):
     #parse arguments
     folder_path  = FLAGS.input_dir
     model_resolution = float(FLAGS.model_resolution)
-    patch_radius = int(FLAGS.patch_radius) 
+    patch_radius = int(FLAGS.patch_radius)
+    pdb_dir = os.path.join(folder_path, 'pdb')
 
     # create folders
     chains_dir = os.path.join('chains')
@@ -33,7 +34,7 @@ def main(_):
     create_folder(npy_dir)
     reduce_dir = os.path.join('reduce')
     create_folder(reduce_dir)
-    pred_dir = os.path.join(folder_path,f'{folder_path}_embeddings')
+    pred_dir = os.path.join(folder_path,'dmasif','raw')
     if not os.path.exists(pred_dir):
         os.makedirs(pred_dir)
 
@@ -41,7 +42,7 @@ def main(_):
     model_path, supsampling = get_model(model_resolution, patch_radius)
 
     # Iterate over files inside folder 
-    all_files = set(glob.glob(os.path.join(folder_path, '*.pdb')))
+    all_files = set(glob.glob(os.path.join(pdb_dir, '*.pdb')))
     all_files_emb = set(glob.glob(os.path.join(pred_dir,'*.npy')))
     files_to_remove = set()
 
