@@ -68,7 +68,7 @@ def main(_):
         pdb_name = "{n}_{c}_{c}".format(n=target_name, c=chains[0])
 
         try:
-            generate_descr(model_path, dmasif_dir, pdb_name, npy_dir,
+            generate_descr(model_path, pred_dir, pdb_name, npy_dir,
                            patch_radius, model_resolution, supsampling)
         except:
             print('could not extract.')
