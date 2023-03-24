@@ -102,12 +102,7 @@ def save_protein_batch_single(protein_pair_id, P, save_path, pdb_idx):
         str(save_path / pdb_id) + f"_predfeatures_emb{emb_id}",
         numpy(coloring))
 
-<<<<<<< HEAD
 def save_protein_embedding_single(protein_pair_id, P, save_path, pdb_idx, save_vtk=False):
-=======
-
-def save_protein_embedding_single(protein_pair_id, P, save_path, pdb_idx, save_vtk = True):
->>>>>>> 058de94d36496ba53f8b04250920806ad8031f5f
 
     protein_pair_id = protein_pair_id.split("_")
     pdb_id = protein_pair_id[0] + "_" + protein_pair_id[pdb_idx]
@@ -121,17 +116,10 @@ def save_protein_embedding_single(protein_pair_id, P, save_path, pdb_idx, save_v
     ) else 0.0 * embedding[:, 0].view(-1, 1)
 
     all_info = torch.cat([inputs, embedding, predictions, xyz], axis=1)
-<<<<<<< HEAD
     id_save=pdb_id.replace("_A", "")
     np.save(os.path.join(save_path, f"{id_save}"), numpy(all_info))
     if save_vtk:
    	 save_vtk(str(save_path / id_save), xyz, values=all_info)
-=======
-    np.save(os.path.join(save_path,'raw', f"{pdb_id}.npy"), numpy(all_info))
-    if save_vtk:
-        save_vtk(os.path.join(save_path,'vtk',f"{pdb_id}.vtk"), xyz)
-
->>>>>>> 058de94d36496ba53f8b04250920806ad8031f5f
 
 def project_iface_labels(P, threshold=2.0):
 
