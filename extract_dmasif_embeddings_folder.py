@@ -43,7 +43,6 @@ def main(_):
     pred_dir = os.path.join(folder_path,'dmasif','raw')
     if not os.path.exists(pred_dir):
         os.makedirs(pred_dir)
-        os.makedirs(vtk_dir)
 
     # model parameters
     model_path, supsampling = get_model(model_resolution, patch_radius)
