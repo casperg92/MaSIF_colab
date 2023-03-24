@@ -5,14 +5,13 @@ import glob
 from absl import app
 from absl import flags
 from tqdm import tqdm
- 
+
 FLAGS = flags.FLAGS
 
-
-flags.DEFINE_enum('model_resolution', '0.7', ['0.7','1'],
+flags.DEFINE_enum('model_resolution', '0.7', ['0.7', '1'],
                   'Resolution of the dMaSIF model.')
 
-flags.DEFINE_enum('patch_radius', '12', ['12','9'],
+flags.DEFINE_enum('patch_radius', '12', ['12', '9'],
                   'Patch radius of the extracted surface.')
 
 flags.DEFINE_string('input_dir', None,
@@ -20,12 +19,21 @@ flags.DEFINE_string('input_dir', None,
 
 flags.mark_flag_as_required('input_dir')
 
+
 def main(_):
+    folder_path = FLAGS.input_dir
+    pdb_dir = os.path.join(folder_path, 'pdb')
+    dmasif_dir = os.path.join(folder_path, 'dmasif')
+    if not os.path.exists(dmasif_dir):
+        os.makedirs(dmasif_dir)
+
     #parse arguments
-    folder_path  = FLAGS.input_dir
     model_resolution = float(FLAGS.model_resolution)
     patch_radius = int(FLAGS.patch_radius)
+<<<<<<< HEAD
     pdb_dir = os.path.join(folder_path, 'pdb')
+=======
+>>>>>>> 058de94d36496ba53f8b04250920806ad8031f5f
 
     # create folders
     chains_dir = os.path.join('chains')
@@ -34,34 +42,49 @@ def main(_):
     create_folder(npy_dir)
     reduce_dir = os.path.join('reduce')
     create_folder(reduce_dir)
+<<<<<<< HEAD
     pred_dir = os.path.join(folder_path,'dmasif','raw')
+=======
+    pred_dir = os.path.join(dmasif_dir, 'raw')
+    vtk_dir = os.path.join(dmasif_dir, 'vtk')
+>>>>>>> 058de94d36496ba53f8b04250920806ad8031f5f
     if not os.path.exists(pred_dir):
         os.makedirs(pred_dir)
+        os.makedirs(vtk_dir)
 
-    # model parameters 
+    # model parameters
     model_path, supsampling = get_model(model_resolution, patch_radius)
 
+<<<<<<< HEAD
     # Iterate over files inside folder 
     all_files = set(glob.glob(os.path.join(pdb_dir, '*.pdb')))
     all_files_emb = set(glob.glob(os.path.join(pred_dir,'*.npy')))
     files_to_remove = set()
+=======
+    # Iterate over files inside folder
+    all_files = set(glob.glob(os.path.join(pdb_dir, '*.pdb')))
+    all_files_emb = set(glob.glob(os.path.join(pred_dir, '*.npy')))
+>>>>>>> 058de94d36496ba53f8b04250920806ad8031f5f
 
+    files_to_remove = set()
     for file in all_files_emb:
-        base_name = os.path.splitext(os.path.basename(file))[0].replace('_A_emb_1', '')
+        base_name = os.path.splitext(os.path.basename(file))[0]
         files_to_remove.add(os.path.join(folder_path, base_name + '.pdb'))
 
-    all_files -=files_to_remove
+    all_files -= files_to_remove
 
-    for target_pdb in tqdm(all_files): 
-        chains = ['A']   #assuming that the protein corresponds to chain A 
+    for target_pdb in tqdm(all_files):
+        chains = ['A']  #assuming that the protein corresponds to chain A
         target_name = os.path.splitext(os.path.basename(target_pdb))[0]
         reduced_pdb = protonate_pdb(reduce_dir, target_pdb)
         convert_to_npy(reduced_pdb, chains_dir, npy_dir, chains)
         # Generate the embeddings
         pdb_name = "{n}_{c}_{c}".format(n=target_name, c=chains[0])
-        try: 
-            generate_descr(model_path, pred_dir, pdb_name, npy_dir, patch_radius, model_resolution, supsampling)
-        except: 
+
+        try:
+            generate_descr(model_path, dmasif_dir, pdb_name, npy_dir,
+                           patch_radius, model_resolution, supsampling)
+        except:
             print('could not extract.')
 
 

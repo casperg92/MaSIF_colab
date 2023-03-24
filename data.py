@@ -22,16 +22,12 @@ def numpy(x):
 def iface_valid_filter(protein_pair):
     labels1 = protein_pair.y_p1.reshape(-1)
     labels2 = protein_pair.y_p2.reshape(-1)
-    valid1 = (
-        (torch.sum(labels1) < 0.75 * len(labels1))
-        and (torch.sum(labels1) > 30)
-        and (torch.sum(labels1) > 0.01 * labels2.shape[0])
-    )
-    valid2 = (
-        (torch.sum(labels2) < 0.75 * len(labels2))
-        and (torch.sum(labels2) > 30)
-        and (torch.sum(labels2) > 0.01 * labels1.shape[0])
-    )
+    valid1 = ((torch.sum(labels1) < 0.75 * len(labels1))
+              and (torch.sum(labels1) > 30)
+              and (torch.sum(labels1) > 0.01 * labels2.shape[0]))
+    valid2 = ((torch.sum(labels2) < 0.75 * len(labels2))
+              and (torch.sum(labels2) > 30)
+              and (torch.sum(labels2) > 0.01 * labels1.shape[0]))
 
     return valid1 and valid2
 
@@ -123,14 +119,13 @@ def load_protein_npy(pdb_id, data_dir, center=False, single_pdb=False):
     """Loads a protein surface mesh and its features"""
 
     # Load the data, and read the connectivity information:
-    triangles = (
-        None
-        if single_pdb
-        else inttensor(np.load(data_dir / (pdb_id + "_triangles.npy"))).T
-    )
+    triangles = (None if single_pdb else inttensor(
+        np.load(data_dir / (pdb_id + "_triangles.npy"))).T)
     # Normalize the point cloud, as specified by the user:
-    points = None if single_pdb else tensor(np.load(data_dir / (pdb_id + "_xyz.npy")))
-    center_location = None if single_pdb else torch.mean(points, axis=0, keepdims=True)
+    points = None if single_pdb else tensor(
+        np.load(data_dir / (pdb_id + "_xyz.npy")))
+    center_location = None if single_pdb else torch.mean(
+        points, axis=0, keepdims=True)
 
     atom_coords = tensor(np.load(data_dir / (pdb_id + "_atomxyz.npy")))
     atom_types = tensor(np.load(data_dir / (pdb_id + "_atomtypes.npy")))
@@ -140,21 +135,16 @@ def load_protein_npy(pdb_id, data_dir, center=False, single_pdb=False):
         atom_coords = atom_coords - center_location
 
     # Interface labels
-    iface_labels = (
-        None
-        if single_pdb
-        else tensor(np.load(data_dir / (pdb_id + "_iface_labels.npy")).reshape((-1, 1)))
-    )
+    iface_labels = (None if single_pdb else tensor(
+        np.load(data_dir / (pdb_id + "_iface_labels.npy")).reshape((-1, 1))))
 
     # Features
-    chemical_features = (
-        None if single_pdb else tensor(np.load(data_dir / (pdb_id + "_features.npy")))
-    )
+    chemical_features = (None if single_pdb else tensor(
+        np.load(data_dir / (pdb_id + "_features.npy"))))
 
     # Normals
-    normals = (
-        None if single_pdb else tensor(np.load(data_dir / (pdb_id + "_normals.npy")))
-    )
+    normals = (None if single_pdb else tensor(
+        np.load(data_dir / (pdb_id + "_normals.npy"))))
 
     protein_data = Data(
         xyz=points,
@@ -171,6 +161,7 @@ def load_protein_npy(pdb_id, data_dir, center=False, single_pdb=False):
 
 
 class PairData(Data):
+
     def __init__(
         self,
         xyz_p1=None,
@@ -217,13 +208,13 @@ class PairData(Data):
         self.rand_rot1 = rand_rot1
         self.rand_rot2 = rand_rot2
 
-    def __inc__(self, key, value,_):
+    def __inc__(self, key, value, _):
         if key == "face_p1":
             return self.xyz_p1.size(0)
         if key == "face_p2":
             return self.xyz_p2.size(0)
         else:
-            return super(PairData, self).__inc__(key, value,_)
+            return super(PairData, self).__inc__(key, value, _)
 
     def __cat_dim__(self, key, value, _):
         if ("index" in key) or ("face" in key):
@@ -231,23 +222,21 @@ class PairData(Data):
         else:
             return 0
 
- 
 
-
-def load_protein_pair(pdb_id, data_dir,single_pdb=False):
+def load_protein_pair(pdb_id, data_dir, single_pdb=False):
     """Loads a protein surface mesh and its features"""
     pspl = pdb_id.split("_")
     p1_id = pspl[0] + "_" + pspl[1]
     p2_id = pspl[0] + "_" + pspl[2]
 
-    p1 = load_protein_npy(p1_id, data_dir, center=False,single_pdb=single_pdb)
-    p2 = load_protein_npy(p2_id, data_dir, center=False,single_pdb=single_pdb)
+    p1 = load_protein_npy(p1_id, data_dir, center=False, single_pdb=single_pdb)
+    p2 = load_protein_npy(p2_id, data_dir, center=False, single_pdb=single_pdb)
     # pdist = ((p1['xyz'][:,None,:]-p2['xyz'][None,:,:])**2).sum(-1).sqrt()
     # pdist = pdist<2.0
     # y_p1 = (pdist.sum(1)>0).to(torch.float).reshape(-1,1)
     # y_p2 = (pdist.sum(0)>0).to(torch.float).reshape(-1,1)
 
-    # To work when we don't have surfaces or features pre-computed   
+    # To work when we don't have surfaces or features pre-computed
     try:
         protein_pair_data = PairData(
             xyz_p1=p1["xyz"],
@@ -268,21 +257,27 @@ def load_protein_pair(pdb_id, data_dir,single_pdb=False):
             atom_types_p2=p2["atom_types"],
         )
     except:
-          protein_pair_data = PairData(
+        protein_pair_data = PairData(
             atom_coords_p1=p1["atom_coords"],
             atom_coords_p2=p2["atom_coords"],
             atom_types_p1=p1["atom_types"],
             atom_types_p2=p2["atom_types"],
-        )      
+        )
     return protein_pair_data
 
 
 class ProteinPairsSurfaces(InMemoryDataset):
     url = ""
 
-    def __init__(self, root, ppi=False, train=True, transform=None, pre_transform=None):
+    def __init__(self,
+                 root,
+                 ppi=False,
+                 train=True,
+                 transform=None,
+                 pre_transform=None):
         self.ppi = ppi
-        super(ProteinPairsSurfaces, self).__init__(root, transform, pre_transform)
+        super(ProteinPairsSurfaces, self).__init__(root, transform,
+                                                   pre_transform)
         path = self.processed_paths[0] if train else self.processed_paths[1]
         self.data, self.slices = torch.load(path)
 
@@ -315,7 +310,7 @@ class ProteinPairsSurfaces(InMemoryDataset):
         if response.status_code == 200:
             with open(target_path, 'wb') as f:
                 f.write(response.raw.read())
-                
+
         #raise RuntimeError(
         #    "Dataset not found. Please download {} from {} and move it to {}".format(
         #        self.raw_file_names, self.url, self.raw_dir
@@ -336,18 +331,16 @@ class ProteinPairsSurfaces(InMemoryDataset):
 
         if not protein_dir.exists():
             protein_dir.mkdir(parents=False, exist_ok=False)
-            convert_plys(surf_dir,protein_dir)
-            convert_pdbs(pdb_dir,protein_dir)
+            convert_plys(surf_dir, protein_dir)
+            convert_pdbs(pdb_dir, protein_dir)
 
         with open(lists_dir / "training.txt") as f_tr, open(
-            lists_dir / "testing.txt"
-        ) as f_ts:
+                lists_dir / "testing.txt") as f_ts:
             training_list = sorted(f_tr.read().splitlines())
             testing_list = sorted(f_ts.read().splitlines())
 
         with open(lists_dir / "training_ppi.txt") as f_tr, open(
-            lists_dir / "testing_ppi.txt"
-        ) as f_ts:
+                lists_dir / "testing_ppi.txt") as f_ts:
             training_pairs_list = sorted(f_tr.read().splitlines())
             testing_pairs_list = sorted(f_ts.read().splitlines())
             pairs_list = sorted(training_pairs_list + testing_pairs_list)
@@ -362,7 +355,8 @@ class ProteinPairsSurfaces(InMemoryDataset):
                 if p1 in training_list:
                     training_pairs_list.append(p)
                 if p2 in training_list:
-                    training_pairs_list.append(pspl[0] + "_" + pspl[2] + "_" + pspl[1])
+                    training_pairs_list.append(pspl[0] + "_" + pspl[2] + "_" +
+                                               pspl[1])
 
             testing_pairs_list = []
             for p in pairs_list:
@@ -372,7 +366,8 @@ class ProteinPairsSurfaces(InMemoryDataset):
                 if p1 in testing_list:
                     testing_pairs_list.append(p)
                 if p2 in testing_list:
-                    testing_pairs_list.append(pspl[0] + "_" + pspl[2] + "_" + pspl[1])
+                    testing_pairs_list.append(pspl[0] + "_" + pspl[2] + "_" +
+                                              pspl[1])
 
         # # Read data into huge `Data` list.
         training_pairs_data = []
@@ -411,11 +406,13 @@ class ProteinPairsSurfaces(InMemoryDataset):
                 self.pre_transform(data) for data in testing_pairs_data
             ]
 
-        training_pairs_data, training_pairs_slices = self.collate(training_pairs_data)
-        torch.save(
-            (training_pairs_data, training_pairs_slices), self.processed_paths[0]
-        )
+        training_pairs_data, training_pairs_slices = self.collate(
+            training_pairs_data)
+        torch.save((training_pairs_data, training_pairs_slices),
+                   self.processed_paths[0])
         np.save(self.processed_paths[2], training_pairs_data_ids)
-        testing_pairs_data, testing_pairs_slices = self.collate(testing_pairs_data)
-        torch.save((testing_pairs_data, testing_pairs_slices), self.processed_paths[1])
+        testing_pairs_data, testing_pairs_slices = self.collate(
+            testing_pairs_data)
+        torch.save((testing_pairs_data, testing_pairs_slices),
+                   self.processed_paths[1])
         np.save(self.processed_paths[3], testing_pairs_data_ids)
